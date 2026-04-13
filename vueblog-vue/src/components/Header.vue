@@ -2,7 +2,7 @@
   <div class="m-content">
     <h3>欢迎来到MarkerHub的博客</h3>
     <div class="block">
-      <el-avatar :size="50" :src="user.avatar"></el-avatar>
+      <el-avatar :size="50" :src="user.avatar || defaultAvatar"></el-avatar>
       <div>{{ user.username }}</div>
     </div>
 
@@ -27,8 +27,9 @@
       return {
         user: {
           username: '请先登录',
-          avatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+          avatar: ''
         },
+        defaultAvatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
         hasLogin: false
       }
     },
@@ -47,13 +48,12 @@
       }
     },
     created() {
-      if(this.$store.getters.getUser.username) {
-        this.user.username = this.$store.getters.getUser.username
-        this.user.avatar = this.$store.getters.getUser.avatar
-
+      const userInfo = this.$store.getters.getUser
+      if(userInfo && userInfo.username) {
+        this.user.username = userInfo.username
+        this.user.avatar = userInfo.avatar || this.defaultAvatar
         this.hasLogin = true
       }
-
     }
   }
 </script>
