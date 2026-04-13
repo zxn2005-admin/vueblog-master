@@ -48,7 +48,8 @@
 
         var result = md.render(blog.content)
         _this.blog.content = result
-        _this.ownBlog = (blog.userId === _this.$store.getters.getUser.id)
+        const userInfo = _this.$store.getters.getUser
+        _this.ownBlog = userInfo && (blog.userId === userInfo.id)
 
       })
     }

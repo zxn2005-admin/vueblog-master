@@ -52,7 +52,7 @@
             { required: true, message: '请输入摘要', trigger: 'blur' }
           ],
           content: [
-            { trequired: true, message: '请输入内容', trigger: 'blur' }
+            { required: true, message: '请输入内容', trigger: 'blur' }
           ]
         }
       };
