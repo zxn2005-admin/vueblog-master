@@ -6,6 +6,4 @@ spring:
     username: root
     password: root
 shiro-redis:
-  enabled: true
-  redis-manager:
-    host: 127.0.0.1:6379
+  enabled: false

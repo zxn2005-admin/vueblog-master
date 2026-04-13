@@ -47,13 +47,12 @@
       }
     },
     created() {
-      if(this.$store.getters.getUser.username) {
-        this.user.username = this.$store.getters.getUser.username
-        this.user.avatar = this.$store.getters.getUser.avatar
-
+      const userInfo = this.$store.getters.getUser
+      if(userInfo && userInfo.username) {
+        this.user.username = userInfo.username
+        this.user.avatar = userInfo.avatar
         this.hasLogin = true
       }
-
     }
   }
 </script>
