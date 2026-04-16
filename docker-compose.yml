@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+  # MySQL 数据库
+  mysql:
+    image: mysql:5.7.27
+    container_name: vueblog-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=vueblog
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./vueblog-java/src/main/resources/vueblog.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Redis 缓存
+  redis:
+    image: redis:latest
+    container_name: vueblog-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 20s
+      retries: 10
+
+  # VueBlog 应用 (前后端一体)
+  vueblog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vueblog-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=pro
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/vueblog?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Nginx 反向代理 (可选，用于生产环境)
+  nginx:
+    image: nginx:alpine
+    container_name: vueblog-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - vueblog
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  redis_data:
